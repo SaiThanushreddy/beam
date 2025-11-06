@@ -160,11 +160,11 @@ const ChatSidebar = ({
               </div>
             </motion.div>
             <h3 className="text-lg font-semibold text-white mb-2">
-              Welcome to Beam
+                  Loading.....
             </h3>
-            <p className="text-sm text-gray-400 max-w-xs">
+            {/* <p className="text-sm text-gray-400 max-w-xs">
               Start building your dream website. Ask me anything or describe what you'd like to create.
-            </p>
+            </p> */}
           </div>
         ) : (
           filteredMessages.map((msg, index) => {

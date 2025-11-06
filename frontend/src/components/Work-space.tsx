@@ -143,7 +143,7 @@
             <Heart size={64} className="text-gray-600" />
           </motion.div>
           <h2 className="text-2xl font-semibold text-gray-400">
-            Connect to start building
+            Loading....
           </h2>
           {error && (
             <div className="max-w-lg">
@@ -164,9 +164,7 @@
           )}
           <div className="space-y-4 mt-8">
             {[
-              "Connect to Workspace",
-              "Chat with AI in the sidebar",
-              "Select specific elements to modify",
+              "Connecting to Workspace",
             ].map((text, i) => (
               <motion.div
                 key={i}
