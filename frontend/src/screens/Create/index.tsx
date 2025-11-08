@@ -45,7 +45,6 @@ const Create = () => {
       setIframeReady(false);
       setIframeError(false);
 
-      // Force iframe reload
       const currentSrc = iframeRef.current.src;
       iframeRef.current.src = "";
 
@@ -59,70 +58,30 @@ const Create = () => {
 
   const messageHandlers = {
     [MessageType.INIT]: (message: any) => {
-      console.log("📥 INIT message received:", message);
       const id = message.id;
       if (id) {
         if (processedMessageIds.current.has(id)) {
-          console.log("⚠️ INIT message already processed, skipping");
           return;
         }
         processedMessageIds.current.add(id);
       }
 
-      console.log("✅ Setting initCompleted to true");
       setInitCompleted(true);
 
       if (typeof message.data.url === "string" && message.data.sandbox_id) {
-        console.log("📍 Setting iframe URL:", message.data.url);
         setIframeUrl(message.data.url);
         setIframeError(false);
       } else {
-        console.log("⚠️ No URL in INIT message, waiting for sandbox creation");
       }
 
       if (message.data.exists === true) {
-        console.log("📦 Sandbox already exists");
         setSandboxExists(true);
       } else {
-        console.log("🆕 New sandbox will be created");
       }
 
-      setMessages((prev) => {
-        if (id) {
-          const existingIndex = prev.findIndex((msg) => msg.id === id);
-          if (existingIndex !== -1) {
-            return prev.map((msg, idx) =>
-              idx === existingIndex
-                ? {
-                  ...msg,
-                  timestamp: message.timestamp || msg.timestamp,
-                  data: {
-                    ...msg.data,
-                    text: "Workspace loaded! You can now make edits here.",
-                    sender: Sender.ASSISTANT,
-                  },
-                }
-                : msg
-            );
-          }
-        }
-        return [
-          ...prev,
-          {
-            ...message,
-            timestamp: message.timestamp || Date.now(),
-            data: {
-              ...message.data,
-              text: "Workspace loaded! You can now make edits here.",
-              sender: Sender.ASSISTANT,
-            },
-          },
-        ];
-      });
     },
 
     [MessageType.ERROR]: (message) => {
-      console.error("❌ ERROR message received:", message);
       setIsSaving(false);
       setMessages((prev) => [
         ...prev,
@@ -218,38 +177,6 @@ const Create = () => {
       setIsUpdateInProgress(true);
       const { id } = message;
 
-      setMessages((prev) => {
-        if (id) {
-          const existingIndex = prev.findIndex((msg) => msg.id === id);
-          if (existingIndex !== -1) {
-            return prev.map((msg, idx) =>
-              idx === existingIndex
-                ? {
-                  ...msg,
-                  timestamp: message.timestamp || msg.timestamp,
-                  data: {
-                    ...msg.data,
-                    text: "Ok - I'll make those changes!",
-                    sender: Sender.ASSISTANT,
-                  },
-                }
-                : msg
-            );
-          }
-        }
-        return [
-          ...prev,
-          {
-            ...message,
-            timestamp: message.timestamp || Date.now(),
-            data: {
-              ...message.data,
-              text: "Ok - I'll make those changes!",
-              sender: Sender.ASSISTANT,
-            },
-          },
-        ];
-      });
     },
 
     [MessageType.UPDATE_FILE]: (message) => {
@@ -366,7 +293,6 @@ const Create = () => {
     sessionId: sessionId,
     handlers: messageHandlers,
     onConnect: () => {
-      console.log("✅ Connected to Beam Cloud");
       setMessages((prev) => [
         ...prev,
         {
@@ -400,19 +326,16 @@ const Create = () => {
   // Handler functions for code preview
   const handleRequestFileTree = useCallback(() => {
     if (!sessionId) return;
-    console.log("📁 Requesting file tree");
     send(MessageType.GET_FILE_TREE, { session_id: sessionId });
   }, [send, sessionId]);
 
   const handleRequestFileContent = useCallback((path: string) => {
     if (!sessionId) return;
-    console.log("📄 Requesting file content:", path);
     send(MessageType.GET_FILE_CONTENT, { session_id: sessionId, path });
   }, [send, sessionId]);
 
   const handleSaveFile = useCallback((path: string, content: string) => {
     if (!sessionId) return;
-    console.log("💾 Saving file:", path);
     setIsSaving(true);
     send(MessageType.SAVE_FILE, { session_id: sessionId, path, content });
   }, [send, sessionId]);
@@ -457,10 +380,8 @@ const Create = () => {
   useEffect(() => {
     if (sessionId && !hasConnectedRef.current) {
       hasConnectedRef.current = true;
-      console.log("🔌 Initiating connection with sessionId:", sessionId);
       connect();
     } else if (!sessionId) {
-      console.error("❌ No session ID available");
       setMessages((prev) => [
         ...prev,
         {
@@ -477,14 +398,12 @@ const Create = () => {
 
   useEffect(() => {
     if (!isConnected) {
-      console.log("🧹 Clearing processed message IDs");
       processedMessageIds.current.clear();
     }
   }, [isConnected]);
 
   useEffect(() => {
     if (iframeUrl) {
-      console.log("🔄 Iframe URL changed, resetting iframe ready state");
       setIframeReady(false);
     }
   }, [iframeUrl]);
@@ -498,7 +417,6 @@ const Create = () => {
       isConnected &&
       sessionId
     ) {
-      console.log("📤 Sending initial prompt:", location.state.initialPrompt);
       send(MessageType.USER, { text: location.state.initialPrompt, session_id: sessionId });
       setMessages((prev) => [
         ...prev,
