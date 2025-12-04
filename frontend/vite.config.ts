@@ -12,7 +12,6 @@ export default defineConfig({
     },
   },
   server: {
-
     hmr: false, // Disable HMR to fix WebSocket error
   },
 });

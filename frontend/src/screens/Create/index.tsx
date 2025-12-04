@@ -437,7 +437,7 @@ const Create = () => {
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: pageLoaded ? 1 : 0, scale: pageLoaded ? 1 : 0.98 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="flex h-screen w-full bg-black text-white overflow-hidden"
+      className="flex h-screen w-full bg-gray-50 text-gray-900 overflow-hidden font-sans"
     >
       <ChatSidebar
         sidebarWidth={sidebarWidth}
@@ -451,7 +451,7 @@ const Create = () => {
 
       <div
         onMouseDown={() => setIsResizing(true)}
-        className="w-1 cursor-col-resize bg-zinc-900 hover:bg-zinc-700 transition-colors"
+        className="w-1 cursor-col-resize bg-gray-200 hover:bg-gray-300 transition-colors"
       />
 
       <WorkspaceView

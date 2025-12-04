@@ -44,16 +44,16 @@
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       >
-        <Loader2 size={64} className="text-gray-400" />
+        <Loader2 size={64} className="text-rose-900" />
       </motion.div>
       <motion.div
         animate={{ opacity: [0.6, 1, 0.6] }}
         transition={{ duration: 1.5, repeat: Infinity }}
-        className="text-xl font-medium text-gray-300"
+        className="text-xl font-medium text-gray-900"
       >
         {text}
       </motion.div>
-      <p className="text-gray-500 text-center max-w-md">{subtext}</p>
+      <p className="text-gray-700 text-center max-w-md">{subtext}</p>
     </div>
   );
 
@@ -81,20 +81,17 @@
   }: WorkspaceViewProps) => {
     const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
     const [editorContent, setEditorContent] = useState(fileContent);
-    // const iframeRef = useRef<HTMLIFrameElement>(null);
 
     useEffect(() => {
       setEditorContent(fileContent);
     }, [fileContent]);
 
     const handleIframeLoad = () => {
-      console.log("✅ Iframe loaded successfully:", iframeUrl);
       setIframeError(false);
       setIframeReady(true);
     };
 
     const handleIframeError = () => {
-      console.error("❌ Iframe failed to load:", iframeUrl);
       setIframeError(true);
     };
 
@@ -124,61 +121,21 @@
       },
     };
 
-    const slideUpVariants = {
-      hidden: { opacity: 0, y: 20 },
-      visible: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, delay: i * 0.2 },
-      }),
-    };
-
     if (!isConnected) {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center gap-8 p-8">
-          <motion.div
-            animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Heart size={64} className="text-gray-600" />
-          </motion.div>
-          <h2 className="text-2xl font-semibold text-gray-400">
-            Loading....
+        <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white">
+          <Heart size={48} className="text-rose-900" />
+          <h2 className="text-2xl font-semibold text-gray-900 font-heading">
+            Connecting to Workspace...
           </h2>
           {error && (
-            <div className="max-w-lg">
-              <div className="text-red-500 border border-red-500 rounded-lg p-4 mb-4">
+            <div className="max-w-lg w-full text-left">
+              <div className="text-red-600 border border-red-300 bg-red-50 rounded-lg p-4">
                 <div className="font-semibold mb-2">Connection Error</div>
                 <div className="text-sm">{error}</div>
               </div>
-              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-sm text-gray-400">
-                <div className="font-semibold text-white mb-2">Troubleshooting:</div>
-                <ul className="space-y-1 list-disc list-inside">
-                  <li>Check if WebSocket URL is correct in config</li>
-                  <li>Verify authentication token is valid</li>
-                  <li>Ensure backend server is running</li>
-                  <li>Check browser console for detailed errors</li>
-                </ul>
-              </div>
             </div>
           )}
-          <div className="space-y-4 mt-8">
-            {[
-              "Connecting to Workspace",
-            ].map((text, i) => (
-              <motion.div
-                key={i}
-                custom={i}
-                variants={slideUpVariants}
-                initial="hidden"
-                animate="visible"
-                className="flex items-center gap-3 text-gray-500"
-              >
-                <Play size={16} />
-                <span>{text}</span>
-              </motion.div>
-            ))}
-          </div>
         </div>
       );
     }
@@ -188,57 +145,44 @@
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="flex-1 flex flex-col bg-zinc-950"
+        className="flex-1 flex flex-col bg-white"
       >
         {/* URL Bar */}
-        <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900 border-b border-zinc-800">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={refreshIframe}
-            disabled={!iframeUrl}
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors disabled:opacity-50"
-          >
+        <div className="flex items-center gap-3 px-4 py-2 bg-white border-b border-gray-200">
+          <Button variant="ghost" size="icon" onClick={refreshIframe} disabled={!iframeUrl}>
             <RotateCcw size={16} />
-          </motion.button>
-          <input
-            value={iframeUrl || ""}
-            readOnly
-            className="flex-1 bg-zinc-800 text-gray-300 rounded-lg px-3 py-2 text-sm border border-zinc-700"
-          />
-          <motion.a
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            href={iframeUrl || undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors"
-          >
-            <ExternalLink size={16} />
-          </motion.a>
+          </Button>
+          <div className="flex-1 bg-gray-100 text-gray-700 rounded-md px-3 py-2 text-sm border border-gray-200">
+            {iframeUrl || "No URL loaded"}
+          </div>
+          <Button variant="ghost" size="icon" asChild>
+            <a href={iframeUrl || undefined} target="_blank" rel="noopener noreferrer">
+              <ExternalLink size={16} />
+            </a>
+          </Button>
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden bg-gray-100">
           {viewMode === "preview" && (
-            <div className="flex-1 relative bg-zinc-900">
+            <div className="flex-1 relative">
               {iframeError ? (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex flex-col items-center gap-6">
-                    <Heart size={64} className="text-gray-600" />
-                    <div className="text-xl font-medium text-gray-300">
+                  <div className="flex flex-col items-center gap-4">
+                    <Heart size={48} className="text-rose-900" />
+                    <div className="text-xl font-medium text-gray-900 font-heading">
                       Failed to load website
                     </div>
-                    <p className="text-gray-500 text-center max-w-md">
-                      {iframeUrl} took too long to load or failed to respond.
+                    <p className="text-gray-600 text-center max-w-md">
+                      The workspace took too long to load or failed to respond.
                     </p>
                   </div>
                 </div>
               ) : !iframeUrl ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <LoadingState
-                    text="Connecting to Workspace..."
-                    subtext="Please wait while we setup your workspace and load the website."
+                    text="Setting up your workspace..."
+                    subtext="This may take a moment. We're getting everything ready for you."
                   />
                 </div>
               ) : (
@@ -247,7 +191,7 @@
                     variants={fadeVariants}
                     initial="hidden"
                     animate={iframeReady && !isUpdateInProgress ? "visible" : "hidden"}
-                    className="h-full w-full"
+                    className="h-full w-full bg-white"
                   >
                     <iframe
                       ref={iframeRef}
@@ -256,24 +200,24 @@
                       allow="fullscreen"
                       referrerPolicy="no-referrer"
                       loading="lazy"
-                      className="w-full h-full"
+                      className="w-full h-full border-0"
                       style={{ pointerEvents: isResizing ? "none" : "auto" }}
                       onLoad={handleIframeLoad}
                       onError={handleIframeError}
                     />
                   </motion.div>
                   {(!iframeReady || isUpdateInProgress || !initCompleted) && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
                       <LoadingState
                         text={
                           isUpdateInProgress
-                            ? "Updating Workspace..."
-                            : "Connecting to Workspace..."
+                            ? "Applying your changes..."
+                            : "Loading your workspace..."
                         }
                         subtext={
                           isUpdateInProgress
-                            ? "Please wait while we apply your changes to the website."
-                            : "Please wait while we setup your workspace and load the website."
+                            ? "The preview will refresh once the updates are complete."
+                            : "Almost there. Thanks for your patience."
                         }
                       />
                     </div>
@@ -285,7 +229,7 @@
 
           {viewMode === "code" && (
             <>
-              <div className="w-64 flex-shrink-0">
+              <div className="w-72 flex-shrink-0 bg-white border-r border-gray-200">
                 <FileExplorer
                   fileTree={fileTree}
                   onSelectFile={onRequestFileContent}
@@ -304,48 +248,29 @@
               />
             </>
           )}
-
-        
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-t border-zinc-800">
+        <div className="flex items-center justify-between px-4 py-2 bg-white border-t border-gray-200">
           {/* View Toggle */}
           <div className="flex gap-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <Button
+              variant={viewMode === 'preview' ? 'default' : 'ghost'}
               onClick={() => setViewMode("preview")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${viewMode === "preview"
-                ? "bg-zinc-800 text-white"
-                : "text-gray-400 hover:bg-zinc-800"
-                }`}
-              disabled={
-                !initCompleted || isUpdateInProgress
-              }
+              disabled={!initCompleted || isUpdateInProgress}
             >
               <Eye size={16} />
               Preview
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </Button>
+            <Button
+              variant={viewMode === 'code' ? 'default' : 'ghost'}
               onClick={() => setViewMode("code")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${viewMode === "code"
-                ? "bg-zinc-800 text-white"
-                : "text-gray-400 hover:bg-zinc-800"
-                }`}
-              disabled={
-                !iframeUrl || !iframeReady || isUpdateInProgress || !initCompleted
-              }
+              disabled={!iframeUrl || !iframeReady || isUpdateInProgress || !initCompleted}
             >
               <Code2 size={16} />
               Code
-            </motion.button>
-            
+            </Button>
           </div>
-
-
         </div>
       </motion.div>
     );
